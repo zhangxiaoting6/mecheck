@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>登入 Demo</title>
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body>
+    <main class="login-card">
+      <h1>登入 Demo</h1>
+      <p class="hint">測試帳號：demo / 123456</p>
+
+      <form id="loginForm">
+        <label for="username">帳號</label>
+        <input id="username" name="username" type="text" required />
+
+        <label for="password">密碼</label>
+        <input id="password" name="password" type="password" required />
+
+        <button type="submit">登入</button>
+      </form>
+
+      <pre id="result" class="result"></pre>
+    </main>
+
+    <script>
+      const form = document.getElementById("loginForm");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        result.textContent = "登入中...";
+
+        const formData = new FormData(form);
+        const username = formData.get("username");
+        const password = formData.get("password");
+
+        try {
+          const response = await fetch("/api/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+          });
+
+          const data = await response.json();
+          result.textContent = JSON.stringify(data, null, 2);
+        } catch (error) {
+          result.textContent = JSON.stringify(
+            { success: false, message: "發生錯誤", detail: error.message },
+            null,
+            2
+          );
+        }
+      });
+    </script>
+  </body>
+</html>
